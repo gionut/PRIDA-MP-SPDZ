@@ -1,0 +1,6 @@
+# Compiled source #
+###################
+Programs/Bytecode/*
+Programs/Schedules/*
+Programs/Public-Input/*
+Programs/Functions
