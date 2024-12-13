@@ -2,6 +2,9 @@ DC_n = 3
 cv_alice = [sint.get_input_from(0) for _ in range(DC_n)]
 cv_bob = [sint.get_input_from(1) for _ in range(DC_n)]
 
+sint.write_to_file(cv_alice)
+sint.write_to_file(cv_bob)
+
 cv_sum = [sint(cv_alice[i] + cv_bob[i]) for i in range(DC_n)]
 
 print_ln('cv_sum')
