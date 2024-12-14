@@ -23,15 +23,18 @@ test_receive_from_clients:
 	../MP-SPDZ/ExternalIO/data_customer.py 4 2 &
 	../MP-SPDZ/ExternalIO/data_customer.py 5 2
 
+N=100
+M=1
 prida+:
-	../MP-SPDZ/compile.py prida+
-	#../MP-SPDZ/Scripts/setup-ssl.sh 2
-	#../MP-SPDZ/Scripts/setup-clients.sh 6
-	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 prida+ -h localhost -N 2 &
-	../MP-SPDZ/Scripts/../spdz2k-party.x 1 -pn 12501 prida+ -h localhost -N 2 &
-	../MP-SPDZ/ExternalIO/data_owner.py 0 2 &
-	../MP-SPDZ/ExternalIO/data_owner.py 1 2 &
-	../MP-SPDZ/ExternalIO/data_owner.py 2 2 &
-	../MP-SPDZ/ExternalIO/data_customer.py 3 2 &
-	../MP-SPDZ/ExternalIO/data_customer.py 4 2 &
-	../MP-SPDZ/ExternalIO/data_customer.py 5 2
+	../MP-SPDZ/Scripts/setup-ssl.sh 2 &
+	../MP-SPDZ/Scripts/setup-clients.sh $$(($(N)+$(M)))
+	
+	../MP-SPDZ/compile.py prida+ 
+	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 prida+ -h localhost -N 2 -v &
+	../MP-SPDZ/Scripts/../spdz2k-party.x 1 -pn 12501 prida+ -h localhost -N 2 -v &
+	for i in $(shell seq 0 $$(($(N)-1))); do \
+		../MP-SPDZ/ExternalIO/data_owner.py $$i 2 & \
+	done; \
+	for i in $(shell seq 0 $$(($(M)-1))); do \
+		../MP-SPDZ/ExternalIO/data_customer.py $$(($(N)+$$i)) 2 & \
+	done;

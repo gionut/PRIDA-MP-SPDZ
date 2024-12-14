@@ -86,7 +86,7 @@ class ClientConnectionManager:
 # N - number of Data Owners
 # M - number of Data Customers
 def receive_data(N, M):
-    ccm = ClientConnectionManager(14000, 3, 3, 2)
+    ccm = ClientConnectionManager(14000, N, M, 2)
     shares = ccm.receive_from_clients(sint, 2*M)
     ccm.close_connections(0, N)
 

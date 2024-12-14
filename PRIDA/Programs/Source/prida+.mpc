@@ -104,11 +104,11 @@ def preliminary_counting(cv, N, M):
     return result
 
 def main():
-    N = 3 # Data Owners
-    M = 3 # Data Customers
+    N = 100  # Data Owners
+    M = 1 # Data Customers
     threshold = 2
     
-    ccm = ClientConnectionManager(14000, 3, 3, 2)
+    ccm = ClientConnectionManager(14000, N, M, 2)
     (cv, d) = receive_data(ccm, N, M)
 
     cv_total = preliminary_counting(cv, N, M).reveal_list()
