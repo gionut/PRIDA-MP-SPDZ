@@ -32,4 +32,4 @@ def preliminary_counting_test():
     def fail():
         print_ln('FAIL')
 
-preliminary_counting_test()
+# preliminary_counting_test()

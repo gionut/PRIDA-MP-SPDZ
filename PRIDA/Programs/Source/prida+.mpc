@@ -1,23 +1,10 @@
-####### Adapted from MP-SPDZ/Programs/Source/bankers_bonus.mpc
+### Find a way to import mpc files as modules
+
 from Compiler.types import sint, regint, Array, MemValue
 from Compiler.library import print_ln, do_while, for_range
 from Compiler.util import if_else
 
 class ClientConnectionManager:
-    def client_input(self, t, size, client_socket_id):
-        """
-        Send share of size random values, receive input and deduce shares.
-        """
-        
-        return t.receive_from_client(size, client_socket_id)
-
-
-    def send_to_client(self, sockets, client_id, value):
-        """Send value to client"""
-
-        # Setup authenticate result using share of random.
-        # client can validate ∑ value * ∑ rnd_from_triple = ∑ auth_result
-        sint.reveal_to_client(sockets.get(client_id), [value])
 
     def __init__(self, PORTNUM, MAX_NUM_CLIENTS, n_threads):
         self.PORTNUM = PORTNUM
@@ -78,6 +65,20 @@ class ClientConnectionManager:
         
         return self.client_values
 
+    def client_input(self, t, size, client_socket_id):
+        """
+        Send share of size random values, receive input and deduce shares.
+        """
+        
+        return t.receive_from_client(size, client_socket_id)
+
+
+    def send_to_client(self, sockets, client_id, value):
+        """Send value to client"""
+        # Setup authenticated result using share of random.
+        # client can validate ∑ value * ∑ rnd_from_triple = ∑ auth_result
+        sint.reveal_to_client(sockets.get(client_id), [value])
+
 # Receive from Data Owners authenticated shares of their choices for Data Customer j 
 # if cv[i][j] = 1, then Data Owner i agrees to share data with Data Customer j
 # if cv[i][j] = 0, then Data Owner i does not want his data to be shared with Data Customer j
@@ -98,4 +99,32 @@ def receive_data(N, M):
 
     return (cv, d)
 
-# receive_data(3, 3)
+def preliminary_counting(cv, N, M):
+    result = sint.Array(M)
+    result.assign_all(0)
+
+    for i in range(N):
+        for j in range(M):
+            result[j] += cv[i][j]
+
+    return result
+
+def main():
+    N = 3 # Data Owners
+    M = 3 # Data Customers
+    threshold = 2
+
+    (cv, d) = receive_data(N, M)
+
+    cv_total = preliminary_counting(cv, N, M).reveal_list()
+    whitelist = [cv <= threshold for cv in cv_total]
+
+    res = sint.Array(M)
+    res.assign_all(0)
+    for j in range(M):
+        for i in range(N):
+            res[j] += d[i][j]
+    
+    #ccm.send_to_client()
+
+main()
