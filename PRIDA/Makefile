@@ -13,19 +13,25 @@ run1:
 test_receive_from_clients:
 	../MP-SPDZ/compile.py client_connection_manager
 	# ../MP-SPDZ/Scripts/setup-ssl.sh 2
-	# ../MP-SPDZ/Scripts/setup-clients.sh 3
+	# ../MP-SPDZ/Scripts/setup-clients.sh 6
 	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 client_connection_manager -h localhost -N 2 &
 	../MP-SPDZ/Scripts/../spdz2k-party.x 1 -pn 12501 client_connection_manager -h localhost -N 2 &
-	../MP-SPDZ/ExternalIO/data_owner.py 0 2 0 &
-	../MP-SPDZ/ExternalIO/data_owner.py 1 2 0 &
-	../MP-SPDZ/ExternalIO/data_owner.py 2 2 1
+	../MP-SPDZ/ExternalIO/data_owner.py 0 2 &
+	../MP-SPDZ/ExternalIO/data_owner.py 1 2 &
+	../MP-SPDZ/ExternalIO/data_owner.py 2 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 3 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 4 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 5 2
 
 prida+:
 	../MP-SPDZ/compile.py prida+
-	# ../MP-SPDZ/Scripts/setup-ssl.sh 2
-	# ../MP-SPDZ/Scripts/setup-clients.sh 3
+	#../MP-SPDZ/Scripts/setup-ssl.sh 2
+	#../MP-SPDZ/Scripts/setup-clients.sh 6
 	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 prida+ -h localhost -N 2 &
 	../MP-SPDZ/Scripts/../spdz2k-party.x 1 -pn 12501 prida+ -h localhost -N 2 &
-	../MP-SPDZ/ExternalIO/data_owner.py 0 2 0 &
-	../MP-SPDZ/ExternalIO/data_owner.py 1 2 0 &
-	../MP-SPDZ/ExternalIO/data_owner.py 2 2 1
+	../MP-SPDZ/ExternalIO/data_owner.py 0 2 &
+	../MP-SPDZ/ExternalIO/data_owner.py 1 2 &
+	../MP-SPDZ/ExternalIO/data_owner.py 2 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 3 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 4 2 &
+	../MP-SPDZ/ExternalIO/data_customer.py 5 2
