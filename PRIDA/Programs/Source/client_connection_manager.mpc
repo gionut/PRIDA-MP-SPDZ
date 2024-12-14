@@ -19,9 +19,9 @@ class ClientConnectionManager:
         # client can validate ∑ value * ∑ rnd_from_triple = ∑ auth_result
         sint.reveal_to_client(sockets.get(client_id), [value])
 
-    def __init__(self, PORTNUM, MAX_NUM_CLIENTS, n_threads):
+    def __init__(self, PORTNUM, DO_NUMBER, n_threads):
         self.PORTNUM = PORTNUM
-        self.MAX_NUM_CLIENTS = MAX_NUM_CLIENTS
+        self.DO_NUMBER = DO_NUMBER
         self.n_threads = n_threads
 
         # Start listening for client socket connections
@@ -29,36 +29,34 @@ class ClientConnectionManager:
         print_ln('Listening for client connections on base port %s', PORTNUM)
 
         # Clients socket id (integer).
-        self.client_sockets = Array(self.MAX_NUM_CLIENTS, regint)
+        self.client_sockets = Array(self.DO_NUMBER, regint)
         # Number of clients
         self.number_clients = MemValue(regint(0))
         # Client ids to identity client
-        self.client_ids = Array(self.MAX_NUM_CLIENTS, sint)
+        self.client_ids = Array(self.DO_NUMBER, sint)
         # Keep track of received inputs
-        self.seen = Array(self.MAX_NUM_CLIENTS, regint)
+        self.seen = Array(self.DO_NUMBER, regint)
         self.seen.assign_all(0)
 
         # Loop round waiting for each client to connect
         @do_while
         def client_connections():
-            client_id, last = self._accept_client()
-            @if_(client_id >= self.MAX_NUM_CLIENTS)
+            client_id = self._accept_client()
+            @if_(client_id >= self.DO_NUMBER)
             def _():
                 print_ln('client id too high')
                 crash()
             self.client_sockets[client_id] = client_id
             self.client_ids[client_id] = client_id
             self.seen[client_id] = 1
-            @if_(last == 1)
-            def _():
-                self.number_clients.write(client_id + 1)
-
-            return (sum(self.seen) < self.number_clients) + (self.number_clients == 0)
+            
+            return (sum(self.seen) < self.DO_NUMBER)
+        
+        self.number_clients.write(self.DO_NUMBER)
 
     def _accept_client(self):
         client_socket_id = accept_client_connection(self.PORTNUM)
-        last = regint.read_from_socket(client_socket_id)
-        return client_socket_id, last
+        return client_socket_id
     
     def close_connections(self):
         self._close_connections(self.number_clients)
@@ -70,7 +68,7 @@ class ClientConnectionManager:
 
     def receive_from_clients(self, t, size):
         # Clients secret input.
-        self.client_values = t.Matrix(self.MAX_NUM_CLIENTS, size)
+        self.client_values = t.Matrix(self.DO_NUMBER, size)
 
         @for_range_multithread(self.n_threads, 1, self.number_clients)
         def _(client_id):
@@ -91,11 +89,11 @@ def receive_data(N, M):
     for id in range(N):
         cv[id] = shares[id][:M]
         d[id] = shares[id][M:]
-        # print_ln(f"cv for data owner {id} is '%s'", cv[id].reveal())
-        # print_ln(f"cv for data owner {id} is '%s'", d[id].reveal())
+        print_ln(f"cv for data owner {id} is '%s'", cv[id].reveal())
+        print_ln(f"cv for data owner {id} is '%s'", d[id].reveal())
     
     ccm.close_connections()
 
     return (cv, d)
 
-# receive_data(3, 3)
+receive_data(3, 3)
