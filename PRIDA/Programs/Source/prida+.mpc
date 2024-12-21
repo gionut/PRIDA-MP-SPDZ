@@ -104,21 +104,23 @@ def preliminary_counting(cv, N, M):
     return result
 
 def main():
-    N = 3  # Data Owners
+    N = 300  # Data Owners
     M = 1 # Data Customers
-    threshold = 2
+    threshold = N//2+1
     
     ccm = ClientConnectionManager(14000, N, M, 2)
     (cv, d) = receive_data(ccm, N, M)
 
     cv_total = preliminary_counting(cv, N, M).reveal_list()
-    whitelist = [cv <= threshold for cv in cv_total]
+    whitelist = [cv_j >= threshold for cv_j in cv_total]
 
     res = sint.Array(M)
     res.assign_all(0)
     for j in range(M):
-        for i in range(N):
-            res[j] += d[i][j]
+        @if_(whitelist[j] == 1)
+        def _():
+            for i in range(N):
+                res[j] += d[i][j]
     
     ccm.send_to_clients(N, N+M, res, whitelist)
     ccm.close_connections(N, N+M)

@@ -23,16 +23,17 @@ test_receive_from_clients:
 	../MP-SPDZ/ExternalIO/data_customer.py 4 2 &
 	../MP-SPDZ/ExternalIO/data_customer.py 5 2
 
-N=100
+N=300
 M=1
 prida+_ssl:
 	../MP-SPDZ/Scripts/setup-ssl.sh 2 &
-	../MP-SPDZ/Scripts/setup-clients.sh $$(($(N)+$(M))) > /dev/null 2>&1 &
+	../MP-SPDZ/Scripts/setup-clients.sh $$(($(N)+$(M)))
 
 prida+_compute:	
-	../MP-SPDZ/compile.py prida+ &
-	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 prida+ -h localhost -N 2 -v &
+	../MP-SPDZ/compile.py prida+
 	../MP-SPDZ/Scripts/../spdz2k-party.x 1 -pn 12501 prida+ -h localhost -N 2 -v &
+	../MP-SPDZ/Scripts/../spdz2k-party.x 0 -pn 12501 prida+ -h localhost -N 2 -v &
+	
 
 prida+_clients:
 	for i in $(shell seq 0 $$(($(N)-1))); do \
