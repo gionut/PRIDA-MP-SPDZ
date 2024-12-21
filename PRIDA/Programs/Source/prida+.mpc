@@ -104,7 +104,7 @@ def preliminary_counting(cv, N, M):
     return result
 
 def main():
-    N = 300  # Data Owners
+    N = 2000  # Data Owners
     M = 1 # Data Customers
     threshold = N//2+1
     
